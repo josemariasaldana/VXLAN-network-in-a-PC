@@ -6,8 +6,6 @@ This is the scheme I will create:
 
 I'm trying to set up two network namespaces to communicate with each other. I've set up two namespaces, `ns0` and `ns1` that each have a `veth` pair, where the non-namespaced side of the veth (i.e. the `brveth`) is linked to a bridge.
 
-I set it up like this:
-
 Create two linked interfaces `veth0` and `brveth0`, and set up `rveth0`:
 ```
 ip link add veth0 type veth peer name brveth0
