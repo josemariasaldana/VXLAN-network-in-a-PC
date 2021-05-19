@@ -1,4 +1,4 @@
-#Experiment #1: Create two namespaces (in the same IP network) and connect them with a bridge
+Experiment 1: Create two namespaces (in the same IP network) and connect them with a bridge
 
 Interesting bibliography: https://unix.stackexchange.com/questions/546235/i-can-ping-across-namespaces-but-not-connect-with-tcp
 
