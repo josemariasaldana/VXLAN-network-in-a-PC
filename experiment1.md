@@ -1,7 +1,9 @@
 # Experiment 1: Create two namespaces (in the same IP network) and connect them with a bridge
 
 This is the scheme I will create:
- 
+
+![experiment1](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment1.png)
+
 I'm trying to set up two network namespaces to communicate with each other. I've set up two namespaces, `ns0` and `ns1` that each have a `veth` pair, where the non-namespaced side of the veth (i.e. the `brveth`) is linked to a bridge.
 
 I set it up like this:
@@ -89,6 +91,6 @@ PING 192.168.1.20 (192.168.1.20) 56(84) bytes of data.
 
 Note: eth0 is not connected with the bridge br10, so traffic cannot go outside.
 
-The full script to create this network scheme is [here]().
+The full script to create this network scheme is [here](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment1.sh).
 
 Interesting bibliography: https://unix.stackexchange.com/questions/546235/i-can-ping-across-namespaces-but-not-connect-with-tcp
