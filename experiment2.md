@@ -9,7 +9,9 @@ This is the scheme I want to build:
 Add the VXLAN in namespace `ns0`
 
 Move to `ns0` namespace:
+```
 root@JMSALDANA:/home/jmsaldana# ip netns exec ns0 bash
+```
 
 Check the connectivity with the other namespace `ns1`
 ```
@@ -111,20 +113,23 @@ I capture the traffic in the main namespace, in the bridge `br10`, so I can see 
 root@JMSALDANA:/home/jmsaldana# tcpdump -i br10 -w VXLAN_inside_my_laptop.pcap
 ```
 
-
-
-Analysis of the capture
+## Analysis of the capture
 
 First ARP exchange
 Packet 1 is the ARP request sent by veth1, asking for the MAC address of 192.168.1.20, i.e. the other side of the tunnel.
 Packet 2 is the response to that ARP request.
+
 These packets are not tunneled, because they are needed in order to build the tunnel:
+
+![experiment2.1](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment2.1.png)
  
 Second ARP exchange
 Packet 3 is the ARP request sent by vxlan1, asking for the MAC address of 10.0.0.2. This packet is the first one that goes through the VxLAN tunnel.
 Packet 4 is the response to that ARP request. It is also tunneled.
+
 These packets are the first ones that go through the tunnel:
  
+![experiment2.2](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment2.2.png)
 
 Finally, the ICMP Exchange takes place through the tunnel.
 Each ICMP packet has:
@@ -137,7 +142,9 @@ The extra overhead is 50 bytes:
 •	20: outer IP header
 •	8: outer UDP header
 •	8: VXLAN header
- 
+
+![experiment2.3](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment2.3.png)
+
 
 ### Check that it works: UDP between the endpoints of the VXLAN
 
