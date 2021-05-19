@@ -1,6 +1,4 @@
-Experiment 1: Create two namespaces (in the same IP network) and connect them with a bridge
-
-Interesting bibliography: https://unix.stackexchange.com/questions/546235/i-can-ping-across-namespaces-but-not-connect-with-tcp
+# Experiment 1: Create two namespaces (in the same IP network) and connect them with a bridge
 
 This is the scheme I will create:
  
@@ -92,3 +90,5 @@ PING 192.168.1.20 (192.168.1.20) 56(84) bytes of data.
 Note: eth0 is not connected with the bridge br10, so traffic cannot go outside.
 
 The full script to create this network scheme is [here]().
+
+Interesting bibliography: https://unix.stackexchange.com/questions/546235/i-can-ping-across-namespaces-but-not-connect-with-tcp
