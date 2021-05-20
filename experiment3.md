@@ -2,7 +2,9 @@
 
 I follow the example in https://blogs.igalia.com/dpino/2016/04/10/network-namespaces/ 
 
-The idea is to send traffic from a namespace to the physical interface, routing it without a bridge.
+The idea is to send traffic from a namespace to the physical interface, routing it without a bridge:
+
+![Experiment 3](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment3.png)
 
 This is a [script with all the commands](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment3.sh).
 
