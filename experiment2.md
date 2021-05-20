@@ -115,7 +115,8 @@ root@JMSALDANA:/home/jmsaldana# tcpdump -i br10 -w VXLAN_inside_my_laptop.pcap
 
 ## Analysis of the capture
 
-First ARP exchange
+### First ARP exchange
+
 Packet 1 is the ARP request sent by veth1, asking for the MAC address of 192.168.1.20, i.e. the other side of the tunnel.
 Packet 2 is the response to that ARP request.
 
@@ -123,7 +124,8 @@ These packets are not tunneled, because they are needed in order to build the tu
 
 ![experiment2.1](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment2.1.png)
  
-Second ARP exchange
+### Second ARP exchange
+
 Packet 3 is the ARP request sent by vxlan1, asking for the MAC address of 10.0.0.2. This packet is the first one that goes through the VxLAN tunnel.
 Packet 4 is the response to that ARP request. It is also tunneled.
 
@@ -132,16 +134,17 @@ These packets are the first ones that go through the tunnel:
 ![experiment2.2](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment2.2.png)
 
 Finally, the ICMP Exchange takes place through the tunnel.
+
 Each ICMP packet has:
-•	An external Ethernet + IP + UDP header
-•	The VXLAN header, with Virtual Network Identifier 1
-•	The inner Ethernet + IP + ICMP header
+- An external Ethernet + IP + UDP header
+- The VXLAN header, with Virtual Network Identifier 1
+- The inner Ethernet + IP + ICMP header
 
 The extra overhead is 50 bytes: 
-•	14: outer Ethernet header
-•	20: outer IP header
-•	8: outer UDP header
-•	8: VXLAN header
+- 14: outer Ethernet header
+- 20: outer IP header
+- 8: outer UDP header
+- 8: VXLAN header
 
 ![experiment2.3](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment2.3.png)
 
@@ -156,11 +159,13 @@ root@JMSALDANA:/home/jmsaldana# echo "This is my data" > /dev/udp/10.0.0.20/8000
 Packet 1 is the UDP packet sent to `10.0.0.20`
 
 The UDP packet has:
-•	An external Ethernet + IP + UDP header
-•	The VXLAN header, with Virtual Network Identifier 1
-•	The inner Ethernet + IP + UDP header
-•	The data
+- An external Ethernet + IP + UDP header
+- The VXLAN header, with Virtual Network Identifier 1
+- The inner Ethernet + IP + UDP header
+- The data
 
 The extra overhead is again 50 bytes.
 
 Packet 2 is just an ICMP packet that the destination returns saying that port `8000` is not reachable: there is no process listening in that port.
+
+![experiment2.4](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment2.4.png)
