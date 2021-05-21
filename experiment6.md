@@ -1,6 +1,6 @@
 ## Experiment #6: Two VXLAN tunnels over the routing setup
 
-Now, I will build two different VXLAN tunnels. The idea is that, in a real setup, `ns0` and `ns2` would be in the same lab (different subnetworks), and `ns1` would be in another location.
+Now, I will build two different VXLAN tunnels. The idea is that, in a real setup, `ns0` and `ns2` would be in the same lab (different subnetworks), and `ns1` would be in another location (if you want to build a kind of loop that makes the traffic go through the Internet).
 
 ![experiment6](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment6.png)
 
@@ -122,7 +122,7 @@ make all external traffic leaving `ns2` go through `v-eth2`
 ip netns exec ns2 ip route add default via 10.200.2.1
 ```
 
-## Share internet access between host and NS.
+## Share internet access between the host and NS.
 
 Enable IP-forwarding.
 ```
@@ -171,13 +171,13 @@ iptables -A FORWARD -i v-eth1 -o v-eth2 -j ACCEPT
 iptables -A FORWARD -i v-eth2 -o v-eth1 -j ACCEPT
 ```
 
-NAT rules
+### NAT rules
 Flush nat rules.
 ```
 iptables -t nat -F
 ```
 
-Enable masquerading of `10.200.1.0`. This is not necessary to reach eth0
+Enable masquerading of `10.200.1.0`. This is not necessary in order to reach `eth0`
 ```
 iptables -t nat -A POSTROUTING -s 10.200.1.0/255.255.255.0 -o eth0 -j MASQUERADE
 ```
@@ -222,15 +222,15 @@ add a route in `ns2` to reach the tunnel `10.0.0.0`
 ip netns exec ns2 ip route add 10.0.0.0/24 dev vxlan2b
 ```
 
-create a bridge inside ns1 and bridge ‘vxlan1’ and ‘vxlan1b’ together
-# this makes it possible to send traffic between ns0 and ns2
+create a bridge inside ns1 and bridge ‘vxlan1’ and ‘vxlan1b’ together. This makes it possible to send traffic between `ns0` and `ns2`
 ```
 ip netns exec ns1 brctl addbr br-vx
 ip netns exec ns1 ip link set br-vx up
 ip netns exec ns1 brctl addif br-vx vxlan1
 ip netns exec ns1 brctl addif br-vx vxlan1b
 ```
-# at this point, you should be able to ping from ns2 to ns0:
+
+at this point, you should be able to ping from `ns2` to `ns0`:
 ```
 $ ip netns exec ns2 ping 10.0.0.20
 ```
@@ -240,7 +240,7 @@ and vice versa:
 $ ip netns exec ns0 ping 10.0.1.22
 ```
 
-The next capture has been obtained in v-eth1 (# tcpdump -i v-eth1 -w double_VXLAN.pcap) while running:
+The next capture has been obtained in `v-eth1` (`# tcpdump -i v-eth1 -w double_VXLAN.pcap`) while running:
 ```
 $ ip netns exec ns2 ping 10.0.0.20 
 ```
@@ -248,8 +248,8 @@ $ ip netns exec ns2 ping 10.0.0.20
 ![experiment6.1](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment6.1.png)
 
 As it can be seen, each ping request appears twice, because it has two hops corresponding to the two VXLAN tunnels it has to traverse.
-Packet #1 goes from 10.200.2.2 to 10.200.1.2
-Packet #2 goes from 10.200.1.2 to 10.200.0.2
+Packet #1 goes from `10.200.2.2` to `10.200.1.2`
+Packet #2 goes from `10.200.1.2` to `10.200.0.2`
  
 In this other capture, the ARPs can be observed:
  
