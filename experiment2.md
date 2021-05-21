@@ -117,7 +117,7 @@ root@JMSALDANA:/home/jmsaldana# tcpdump -i br10 -w VXLAN_inside_my_laptop.pcap
 
 ### First ARP exchange
 
-Packet 1 is the ARP request sent by veth1, asking for the MAC address of 192.168.1.20, i.e. the other side of the tunnel.
+Packet 1 is the ARP request sent by `veth1`, asking for the MAC address of `192.168.1.20`, i.e. the other side of the tunnel.
 Packet 2 is the response to that ARP request.
 
 These packets are not tunneled, because they are needed in order to build the tunnel:
@@ -126,7 +126,7 @@ These packets are not tunneled, because they are needed in order to build the tu
  
 ### Second ARP exchange
 
-Packet 3 is the ARP request sent by vxlan1, asking for the MAC address of 10.0.0.2. This packet is the first one that goes through the VxLAN tunnel.
+Packet 3 is the ARP request sent by `vxlan1`, asking for the MAC address of `10.0.0.2`. This packet is the first one that goes through the VXLAN tunnel.
 Packet 4 is the response to that ARP request. It is also tunneled.
 
 These packets are the first ones that go through the tunnel:
