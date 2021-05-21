@@ -92,100 +92,100 @@ ip netns exec ns2 ip addr add 10.200.2.2/24 dev v-peer2
 ip netns exec ns2 ip link set v-peer2 up
 ```
 
-set ‘lo’ interface up in ns0
+set `lo` interface up in `ns0`
 ```
 ip netns exec ns0 ip link set lo up
 ```
 
-# set ‘lo’ interface up in ns1
+set `lo` interface up in `ns1`
 ```
 ip netns exec ns1 ip link set lo up
 ```
 
-# set ‘lo’ interface up in ns2
+set `lo` interface up in `ns2`
 ```
 ip netns exec ns2 ip link set lo up
 ```
 
-# make all external traffic leaving ns0 go through v-eth0.
+make all external traffic leaving `ns0` go through `v-eth0`
 ```
 ip netns exec ns0 ip route add default via 10.200.0.1
 ```
 
-# make all external traffic leaving ns1 go through v-eth1.
+make all external traffic leaving `ns1` go through `v-eth1`
 ```
 ip netns exec ns1 ip route add default via 10.200.1.1
 ```
 
-# make all external traffic leaving ns2 go through v-eth2.
+make all external traffic leaving `ns2` go through `v-eth2`
 ```
 ip netns exec ns2 ip route add default via 10.200.2.1
 ```
 
 ## Share internet access between host and NS.
 
-# Enable IP-forwarding.
+Enable IP-forwarding.
 ```
 echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
 
-# Flush forward rules, policy DROP by default.
+Flush forward rules, policy `DROP` by default.
 ```
 iptables -P FORWARD DROP
 iptables -F FORWARD
 ```
 
-# Allow forwarding between eth0 and v-eth0
+Allow forwarding between `eth0` and `v-eth0`
 ```
 iptables -A FORWARD -i eth0 -o v-eth0 -j ACCEPT
 iptables -A FORWARD -o eth0 -i v-eth0 -j ACCEPT
 ```
 
-# Allow forwarding between eth0 and v-eth1
+Allow forwarding between `eth0` and `v-eth1`
 ```
 iptables -A FORWARD -i eth0 -o v-eth1 -j ACCEPT
 iptables -A FORWARD -o eth0 -i v-eth1 -j ACCEPT
 ```
 
-# Allow forwarding between eth0 and v-eth2
+Allow forwarding between `eth0` and `v-eth2`
 ```
 iptables -A FORWARD -i eth0 -o v-eth2 -j ACCEPT
 iptables -A FORWARD -o eth0 -i v-eth2 -j ACCEPT
 ```
 
-# Allow forwarding between v-eth0 and v-eth1
+Allow forwarding between `v-eth0` and `v-eth1`
 ```
 iptables -A FORWARD -i v-eth0 -o v-eth1 -j ACCEPT
 iptables -A FORWARD -i v-eth1 -o v-eth0 -j ACCEPT
 ```
 
-# Allow forwarding between v-eth0 and v-eth2
+Allow forwarding between `v-eth0` and `v-eth2`
 ```
 iptables -A FORWARD -i v-eth0 -o v-eth2 -j ACCEPT
 iptables -A FORWARD -i v-eth2 -o v-eth0 -j ACCEPT
 ```
 
-# Allow forwarding between v-eth1 and v-eth2
+Allow forwarding between `v-eth1` and `v-eth2`
 ```
 iptables -A FORWARD -i v-eth1 -o v-eth2 -j ACCEPT
 iptables -A FORWARD -i v-eth2 -o v-eth1 -j ACCEPT
 ```
 
-
-# NAT rules
-# Flush nat rules.
+NAT rules
+Flush nat rules.
 ```
 iptables -t nat -F
 ```
 
-# Enable masquerading of 10.200.1.0. This is not necessary to reach eth0
+Enable masquerading of `10.200.1.0`. This is not necessary to reach eth0
 ```
 iptables -t nat -A POSTROUTING -s 10.200.1.0/255.255.255.0 -o eth0 -j MASQUERADE
 ```
 
 
-# VXLAN tunnels
-# Create the VXLAN tunnel 10.0.0.0:
+### VXLAN tunnels
+
+Create the VXLAN tunnel `10.0.0.0`:
 ```
 ip netns exec ns0 ip link add vxlan0 type vxlan id 1 remote 10.200.1.2 dstport 4789 dev v-peer0
 ip netns exec ns0 ip link set vxlan0 up
@@ -196,7 +196,7 @@ ip netns exec ns1 ip link set vxlan1 up
 ip netns exec ns1 ip addr add 10.0.0.21/24 dev vxlan1
 ```
 
-# Create the VXLAN tunnel 10.0.1.0:
+Create the VXLAN tunnel `10.0.1.0`:
 ```
 ip netns exec ns1 ip link add vxlan1b type vxlan id 2 remote 10.200.2.2 dstport 4789 dev v-peer1
 ip netns exec ns1 ip link set vxlan1b up
@@ -207,22 +207,22 @@ ip netns exec ns2 ip link set vxlan2b up
 ip netns exec ns2 ip addr add 10.0.1.22/24 dev vxlan2b
 ```
 
-#add a route in ns0 to reach the tunnel 10.0.1.0
+add a route in `ns0` to reach the tunnel `10.0.1.0`
 ```
 ip netns exec ns0 ip route add 10.0.1.0/24 dev vxlan0
 ```
 
-# at this point, you should be able to ping from ns0 to vxlan1b in ns1:
+at this point, you should be able to ping from ns0 to vxlan1b in ns1:
 ```
 $ ip netns exec ns0 ping 10.0.1.21
 ```
 
-# add a route in ns2 to reach the tunnel 10.0.0.0
+add a route in `ns2` to reach the tunnel `10.0.0.0`
 ```
 ip netns exec ns2 ip route add 10.0.0.0/24 dev vxlan2b
 ```
 
-# create a bridge inside ns1 and bridge ‘vxlan1’ and ‘vxlan1b’ together
+create a bridge inside ns1 and bridge ‘vxlan1’ and ‘vxlan1b’ together
 # this makes it possible to send traffic between ns0 and ns2
 ```
 ip netns exec ns1 brctl addbr br-vx
