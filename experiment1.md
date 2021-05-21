@@ -4,7 +4,9 @@ This is the scheme I will create:
 
 ![experiment1](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment1.png)
 
-I'm trying to set up two network namespaces to communicate with each other. I've set up two namespaces, `ns0` and `ns1` that each have a `veth` pair, where the non-namespaced side of the veth (i.e. the `brveth`) is linked to a bridge.
+I am trying to set up two network namespaces to communicate with each other. I set up two namespaces, `ns0` and `ns1` that each have a *veth* pair, where the non-namespaced side of the *veth* (i.e. the `brveth`) is linked to a bridge.
+
+There is a [full script to create this network scheme](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment1.sh).
 
 ## Create the setup
 
@@ -53,7 +55,7 @@ ip link set veth0 netns ns0
 ip link set veth1 netns ns1
 ```
 
-Inside ns0, add the IP address to `veth0`, set it up, and also set up the local interface `lo`:
+Inside `ns0`, add the IP address to `veth0`, set it up, and also set up the local interface `lo`:
 ```
 ip netns exec ns0 ip addr add 192.168.1.20/24 dev veth0
 ip netns exec ns0 ip link set veth0 up
@@ -75,13 +77,21 @@ ip link set brveth1 master br10
 
 List the bridges:
 ```
+root@debian:/home/jmsaldana# ip link show dev br10
+7: br10: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 12:84:70:1c:25:75 brd ff:ff:ff:ff:ff:ff
+root@debian:/home/jmsaldana# 
+```
+
+Another (deprecated) option: using `brctl`
+```
 root@JMSALDANA:/home/jmsaldana# brctl show
 bridge name     bridge id               STP enabled     interfaces
 br10            8000.128812c192fd       no              brveth0
                                                         brveth1
 ```
 
-As expected, I can ping from `ns1` to the interface in `ns0`:
+As expected, you can ping from `ns1` to the interface in `ns0`:
 ```
 $ ip netns exec ns1 ping -c 3  192.168.1.20
 PING 192.168.1.20 (192.168.1.20) 56(84) bytes of data.
@@ -89,9 +99,8 @@ PING 192.168.1.20 (192.168.1.20) 56(84) bytes of data.
 64 bytes from 192.168.1.20: icmp_seq=2 ttl=64 time=0.189 ms
 ```
 
-Note: eth0 is not connected with the bridge br10, so traffic cannot go outside.
+Note: `eth0` is not connected with the bridge `br10`, so traffic cannot go outside.
 
-The full script to create this network scheme is [here](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment1.sh).
 
 Interesting bibliography: https://unix.stackexchange.com/questions/546235/i-can-ping-across-namespaces-but-not-connect-with-tcp
 
@@ -116,7 +125,7 @@ PING 192.168.1.20 (192.168.1.20) 56(84) bytes of data.
 64 bytes from 192.168.1.20: icmp_seq=2 ttl=64 time=0.059 ms
 ```
 
-See the list of IP interfaces of `ns1`:
+See the list of IP interfaces of `ns1`
 ```
 root@JMSALDANA:/home/jmsaldana# ip link list
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
