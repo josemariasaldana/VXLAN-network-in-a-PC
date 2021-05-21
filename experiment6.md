@@ -1,96 +1,98 @@
 ## Experiment #6: Two VXLAN tunnels over the routing setup
 
-Now, I will build two different VXLAN tunnels. The idea is that, in a real setup, ns0 and ns2 would be in the same lab (different subnetworks), and ns1 would be in another location.
+Now, I will build two different VXLAN tunnels. The idea is that, in a real setup, `ns0` and `ns2` would be in the same lab (different subnetworks), and `ns1` would be in another location.
 
 ![experiment6](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment6.png)
 
 This is a [script with all the commands](https://github.com/josemariasaldana/VXLAN-network-in-a-PC/blob/main/experiment6.sh).
 
-I create a VXLAN tunnel from ns0 to ns1, and another one between ns1 and ns2. In order to let traffic flow between both tunnels, I create a bridge br-vx inside ns1.
-The objective is to ping from vxlan0 to vxlan2b through the two tunnels.
+I create a VXLAN tunnel from `ns0` to `ns1`, and another one between `ns1` and `ns2`. In order to let traffic flow between both tunnels, I create a bridge `br-vx` inside `ns1`.
+
+The objective is to ping from `vxlan0` to `vxlan2b` through the two tunnels.
 
 These are the commands:
-# Remove namespaces if they exist
+
+Remove namespaces if they exist
 ```
 ip netns del ns0 &>/dev/null
 ip netns del ns1 &>/dev/null
 ip netns del ns2 &>/dev/null
 ```
 
-# Create namespaces
+Create namespaces
 ```
 ip netns add ns0
 ip netns add ns1
 ip netns add ns2
 ```
 
-# Create veth link with two peer interfaces: v-eth0 and v-peer0
+Create a `veth` link with two peer interfaces: `v-eth0` and `v-peer0`
 ```
 ip link add v-eth0 type veth peer name v-peer0
 ```
 
-# Create veth link with two peer interfaces: v-eth1 and v-peer1
+Create a `veth` link with two peer interfaces: `v-eth1` and `v-peer1`
 ```
 ip link add v-eth1 type veth peer name v-peer1
 ```
 
-# Create veth link with two peer interfaces: v-eth2 and v-peer2
+Create a `veth` link with two peer interfaces: `v-eth2` and `v-peer2`
 ```
 ip link add v-eth2 type veth peer name v-peer2
 ```
 
-# Add v-peer-0 to NS.
+Add `v-peer-0` to `ns0`.
 ```
 ip link set v-peer0 netns ns0
 ```
 
-# Add v-peer-1 to NS.
+Add `v-peer-1` to `ns1`.
 ```
 ip link set v-peer1 netns ns1
 ```
 
-# Add v-peer-2 to NS.
+Add `v-peer-2` to `ns2`.
 ```
 ip link set v-peer2 netns ns2
 ```
 
-# Setup IP address of v-eth0.
+Setup IP address of `v-eth0`
 ```
 ip addr add 10.200.0.1/24 dev v-eth0
 ip link set v-eth0 up
 ```
 
-# Setup IP address of v-eth1.
+Setup IP address of `v-eth1`
 ```
 ip addr add 10.200.1.1/24 dev v-eth1
 ip link set v-eth1 up
 ```
 
-# Setup IP address of v-eth2.
+Setup IP address of `v-eth2`.
 ```
 ip addr add 10.200.2.1/24 dev v-eth2
 ip link set v-eth2 up
 ```
 
-# Setup IP address of v-peer0.
+Setup IP address of `v-peer0`.
 ```
 ip netns exec ns0 ip addr add 10.200.0.2/24 dev v-peer0
 ip netns exec ns0 ip link set v-peer0 up
 ```
 
-# Setup IP address of v-peer1.
+Setup IP address of `v-peer1`.
 ```
 ip netns exec ns1 ip addr add 10.200.1.2/24 dev v-peer1
 ip netns exec ns1 ip link set v-peer1 up
 ```
 
-# Setup IP address of v-peer2.
+Setup IP address of `v-peer2`.
 ```
 ip netns exec ns2 ip addr add 10.200.2.2/24 dev v-peer2
 ip netns exec ns2 ip link set v-peer2 up
 ```
 
-# set ‘lo’ interface up in ns0
+set ‘lo’ interface up in ns0
 ```
 ip netns exec ns0 ip link set lo up
 ```
